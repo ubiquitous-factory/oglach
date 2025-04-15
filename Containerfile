@@ -9,9 +9,14 @@ RUN dnf install -y git python3 python3-devel postgresql postgresql-devel \
     boost-devel glib2-devel rsyslog openssl-devel \
     numpy wget zlib-devel libuuid-devel \
     krb5-workstation curl-devel cmake3
-RUN dnf group install -y "Development Tools"
-RUN dnf clean all;
 
+# Fedora tools
+RUN dnf install -y @development-tools
+RUN  dnf install -y gcc-c++ autoconf automake libtool
+
+# Alma Tools
+# RUN dnf group install -y "Development Tools"
+RUN dnf clean all;
 ENV SQLITE_PKG_REPO_NAME="sqlite3-pkg"
 
 WORKDIR /tmp
@@ -22,6 +27,7 @@ RUN autoreconf -f -i
 RUN make && make install
 
 RUN python3 -m pip install --upgrade pip 
+RUN pip install setuptools 
 
 WORKDIR /tmp
 RUN git clone --depth 1 https://github.com/fledge-iot/fledge.git
