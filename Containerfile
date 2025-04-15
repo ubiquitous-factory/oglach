@@ -35,6 +35,21 @@ WORKDIR /tmp/fledge
 
 RUN make
 RUN make install
-COPY fledge.sh /etc/fledge
+COPY fledge.sh /etc/fledge/fledge.sh
 COPY fledge.service /etc/systemd/system
 RUN systemctl enable fledge.service
+RUN mkdir -p /etc/fledge/data
+
+RUN dnf install -y nodejs
+WORKDIR /tmp
+RUN git clone --depth 1 https://github.com/fledge-iot/fledge-gui.git
+RUN npm install -g yarn
+WORKDIR /tmp/fledge-gui
+RUN ./build --clean-start 
+RUN mv /tmp/fledge-gui/dist /etc/fledge/gui
+COPY nginx.conf /etc/fledge/nginx.conf
+RUN dnf install -y nginx
+COPY fledge-gui.service /etc/systemd/system
+RUN systemctl enable fledge-gui.service
+
+

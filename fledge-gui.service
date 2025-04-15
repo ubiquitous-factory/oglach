@@ -1,12 +1,11 @@
 [Unit]
-Description=Run fledge
+Description=Run fledge gui
 After=network.target
 
 [Service]
 Type=forking
 RemainAfterExit=no
-ExecStart=/etc/fledge/fledge.sh start
-ExecStop=/etc/fledge/fledge.sh stop
+ExecStart=/usr/sbin/nginx -c /etc/fledge/nginx.conf -p /etc/fledge/gui
 TimeoutStartSec=0
 
 [Install]
