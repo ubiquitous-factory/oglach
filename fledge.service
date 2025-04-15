@@ -5,9 +5,10 @@ After=network.target
 [Service]
 Type=forking
 RemainAfterExit=no
-ExecStart=/etc/fledge/fledge.sh start
-ExecStop=/etc/fledge/fledge.sh stop
+ExecStart=/usr/local/fledge/bin/fledge start
+ExecStop=/usr/local/fledge/bin/fledge kill
 TimeoutStartSec=0
+Environment="FLEDGE_DATA=/etc/fledge/data"
 
 [Install]
 WantedBy=default.target
