@@ -8,7 +8,7 @@ RUN dnf update -y
 RUN dnf install -y git python3 python3-devel postgresql postgresql-devel \
     boost-devel glib2-devel rsyslog openssl-devel \
     numpy wget zlib-devel libuuid-devel \
-    krb5-workstation curl-devel cmake3
+    krb5-workstation curl-devel cmake3 nginx nodejs
 
 # Fedora tools
 RUN dnf install -y @development-tools
@@ -35,12 +35,13 @@ WORKDIR /tmp/fledge
 
 RUN make
 RUN make install
-COPY fledge.sh /etc/fledge/fledge.sh
+
+# Configure fledge
 COPY fledge.service /etc/systemd/system
 RUN systemctl enable fledge.service
 RUN mkdir -p /etc/fledge/data
 
-RUN dnf install -y nodejs
+# Build frontend system
 WORKDIR /tmp
 RUN git clone --depth 1 https://github.com/fledge-iot/fledge-gui.git
 RUN npm install -g yarn
@@ -48,8 +49,7 @@ WORKDIR /tmp/fledge-gui
 RUN ./build --clean-start 
 RUN mv /tmp/fledge-gui/dist /etc/fledge/gui
 COPY nginx.conf /etc/fledge/nginx.conf
-RUN dnf install -y nginx
 COPY fledge-gui.service /etc/systemd/system
 RUN systemctl enable fledge-gui.service
-
+RUN rm -fr /tmp/*
 
