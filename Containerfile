@@ -1,6 +1,6 @@
 
-FROM quay.io/almalinuxorg/almalinux-bootc:9.4
-
+# FROM quay.io/almalinuxorg/almalinux-bootc:9.5-20250408
+FROM quay.io/fedora/fedora-bootc:41
 # based on 
 # https://github.com/fledge-iot/fledge/blob/develop/requirements.sh
 RUN dnf update -y
@@ -11,10 +11,6 @@ RUN dnf install -y git python3 python3-devel postgresql postgresql-devel \
     krb5-workstation curl-devel cmake3
 RUN dnf group install -y "Development Tools"
 RUN dnf clean all;
-
-# RUN cp -p /usr/bin/cmake /usr/bin/cmake.old \
-#     # Use -f to remove existing cmake binary file \
-#     ln -f -s /usr/bin/cmake3 /usr/bin/cmake
 
 ENV SQLITE_PKG_REPO_NAME="sqlite3-pkg"
 
