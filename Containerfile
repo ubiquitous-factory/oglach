@@ -1,6 +1,6 @@
 
 # FROM quay.io/almalinuxorg/almalinux-bootc:9.5-20250408
-FROM quay.io/fedora/fedora-bootc:41
+FROM quay.io/fedora/fedora-bootc:41 as build
 # based on 
 # https://github.com/fledge-iot/fledge/blob/develop/requirements.sh
 RUN dnf update -y
@@ -8,17 +8,18 @@ RUN dnf update -y
 RUN dnf install -y git python3 python3-devel postgresql postgresql-devel \
     boost-devel glib2-devel rsyslog openssl-devel \
     numpy wget zlib-devel libuuid-devel \
-    krb5-workstation curl-devel cmake3 nginx nodejs
+    krb5-workstation curl-devel cmake3 nginx nodejs gcc-c++ autoconf automake libtool
 
 # Fedora tools
 RUN dnf install -y @development-tools
-RUN  dnf install -y gcc-c++ autoconf automake libtool
 
 # Alma Tools
 # RUN dnf group install -y "Development Tools"
 RUN dnf clean all;
-ENV SQLITE_PKG_REPO_NAME="sqlite3-pkg"
 
+
+# Install sqllite
+ENV SQLITE_PKG_REPO_NAME="sqlite3-pkg"
 WORKDIR /tmp
 RUN git clone --depth 1 https://github.com/dianomic/${SQLITE_PKG_REPO_NAME}.git ${SQLITE_PKG_REPO_NAME}
 WORKDIR /tmp/${SQLITE_PKG_REPO_NAME}/src
@@ -53,3 +54,32 @@ COPY fledge-gui.service /etc/systemd/system
 RUN systemctl enable fledge-gui.service
 RUN rm -fr /tmp/*
 
+FROM quay.io/fedora/fedora-bootc:41
+
+RUN dnf update -y
+
+RUN dnf install -y python3 python3-devel postgresql \
+    boost glib2 rsyslog openssl \
+    numpy wget zlib  libuuid \
+    krb5-workstation curl nginx
+RUN dnf clean all;
+
+RUN python3 -m pip install --upgrade pip 
+RUN pip install setuptools 
+
+COPY --from=build /usr/local/include/sqlite3.h /usr/local/include/sqlite3.h
+COPY --from=build /usr/local/bin/sqlite3 /usr/local/bin/sqlite3
+COPY --from=build /usr/local/lib/libsqlite3.la /usr/local/lib/libsqlite3.la
+COPY --from=build /usr/local/lib/libsqlite3.a /usr/local/lib/libsqlite3.a
+COPY --from=build /usr/local/fledge /usr/local/fledge
+COPY --from=build  /etc/fledge/gui  /etc/fledge/gui
+
+RUN chmod 644 /usr/local/lib/libsqlite3.a
+
+COPY nginx.conf /etc/fledge/nginx.conf
+COPY fledge-gui.service /etc/systemd/system
+RUN systemctl enable fledge-gui.service
+
+COPY fledge.service /etc/systemd/system
+RUN systemctl enable fledge.service
+RUN mkdir -p /etc/fledge/data
