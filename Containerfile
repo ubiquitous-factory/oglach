@@ -66,7 +66,7 @@ RUN dnf clean all;
 
 RUN python3 -m pip install --upgrade pip 
 RUN pip install setuptools 
-
+RUN pip install aiohttp
 # COPY --from=build /usr/local/include/sqlite3.h /usr/local/include/sqlite3.h
 COPY --from=build /usr/local/bin/sqlite3 /usr/local/bin/sqlite3
 COPY --from=build /usr/local/lib/libsqlite3.la /usr/local/lib/libsqlite3.la

@@ -1,17 +1,22 @@
 # oglach
 
-A distribution of fledge on Fedora Linux.
+A distribution of fledge on Fedora Linux using bootc.
 
-This is a test project to demo the capabilities of bootc using a complex project.
+This project aims to demonstrate a production level bootc deployment system using [CLOS](https://clos.mehal.tech).   
 
 ## run as container 
 ```
-podman run --rm --name fledge -d ghcr.io/ubiquitous-factory/oglach:7f29007baf78069d4f82b6e4a0357ee72e86ed59
+podman run --rm --name fledge -d -p 8081:8081 -p 1995:1995 -p 8080:80 ghcr.io/ubiquitous-factory/oglach:latest
 podman exec -ti fledge bash
 ```
 
+Browse to http://localhost:8080
+login: admin 
+password: fledge
+
 ## run as bootc image
 
+Unfortunately podman-bootc doesn't support [arbitrary port parameters](https://github.com/containers/podman-bootc/issues/6) yet.
 ```
 podman machine init --rootful --now
 podman-bootc run --filesystem xfs ghcr.io/ubiquitous-factory/oglach:latest
@@ -75,6 +80,8 @@ Get the statistics with token
 curl -H "authorization: <TOKEN>" -s http://localhost:8081/fledge/statistics ; echo
 [{"key": "BUFFERED", "description": "Readings currently in the Fledge buffer", "value": 0}, {"key": "DISCARDED", "description": "Readings discarded by the South Service before being  placed in the buffer. This may be due to an error in the readings themselves.", "value": 0}, {"key": "PURGED", "description": "Readings removed from the buffer by the purge process", "value": 0}, {"key": "READINGS", "description": "Readings received by Fledge", "value": 0}, {"key": "UNSENT", "description": "Readings filtered out in the send process", "value": 0}, {"key": "UNSNPURGED", "description": "Readings that were purged from the buffer before being sent", "value": 0}]
 ```
+
+
 
 ## build 
 
