@@ -67,10 +67,11 @@ RUN dnf clean all;
 RUN python3 -m pip install --upgrade pip 
 RUN pip install setuptools 
 
-COPY --from=build /usr/local/include/sqlite3.h /usr/local/include/sqlite3.h
+# COPY --from=build /usr/local/include/sqlite3.h /usr/local/include/sqlite3.h
 COPY --from=build /usr/local/bin/sqlite3 /usr/local/bin/sqlite3
 COPY --from=build /usr/local/lib/libsqlite3.la /usr/local/lib/libsqlite3.la
 COPY --from=build /usr/local/lib/libsqlite3.a /usr/local/lib/libsqlite3.a
+COPY --from=build /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
 COPY --from=build /usr/local/fledge /usr/local/fledge
 COPY --from=build  /etc/fledge/gui  /etc/fledge/gui
 

@@ -4,7 +4,13 @@ A distribution of fledge on Fedora Linux.
 
 This is a test project to demo the capabilities of bootc using a complex project.
 
-## run 
+## run as container 
+```
+podman run --rm --name fledge -d ghcr.io/ubiquitous-factory/oglach:7f29007baf78069d4f82b6e4a0357ee72e86ed59
+podman exec -ti fledge bash
+```
+
+## run as bootc image
 
 ```
 podman machine init --rootful --now
