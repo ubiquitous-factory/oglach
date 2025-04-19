@@ -1,0 +1,12 @@
+[Unit]
+Description=Run script at startup after network becomes reachable
+After=fledge.service
+
+[Service]
+Type=simple
+RemainAfterExit=yes
+ExecStart=/etc/oglach/startup.sh
+TimeoutStartSec=0
+
+[Install]
+WantedBy=default.target

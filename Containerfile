@@ -73,6 +73,7 @@ COPY --from=build /usr/local/lib/libsqlite3.la /usr/local/lib/libsqlite3.la
 COPY --from=build /usr/local/lib/libsqlite3.a /usr/local/lib/libsqlite3.a
 COPY --from=build /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
 COPY --from=build /usr/local/fledge /usr/local/fledge
+COPY --from=build /usr/local/fledge/data /etc/fledge/data
 COPY --from=build  /etc/fledge/gui  /etc/fledge/gui
 
 RUN chmod 644 /usr/local/lib/libsqlite3.a
@@ -83,4 +84,10 @@ RUN systemctl enable fledge-gui.service
 
 COPY fledge.service /etc/systemd/system
 RUN systemctl enable fledge.service
-RUN mkdir -p /etc/fledge/data
+
+COPY startup/startup.service /etc/systemd/system
+RUN mkdir -p /etc/oglach
+COPY startup/startup.sh /etc/oglach/startup.sh
+RUN chmod +x /etc/oglach/startup.sh
+RUN systemctl enable startup.service
+RUN touch /etc/oglach/oglach.run
